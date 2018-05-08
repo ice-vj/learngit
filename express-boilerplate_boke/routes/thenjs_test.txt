@@ -1,0 +1,220 @@
+function teacher_question(req, res) {
+	var responseWrapper = new ResponseWrapper(res);
+	var dmpServ = config.get('YUANPEI_SERV');
+	var user_id = req.body.user_id;
+	var questions = req.body.questions;
+	var objQuestion = {};
+	var docs = null,
+		srcExampaper = {};
+	var knowIds = _.map(_.pluck(_.flatten(_.map(questions, function(question){
+		return Array.isArray(question.knowledges) ? question.knowledges : [];				
+	})), 'id'), function(kid){
+		return Number(kid);
+	});
+	_.each(questions, function(question){
+		var id = question.g_paper_id;
+		if(!objQuestion[id])
+			objQuestion[id] = [];
+		objQuestion[id].push(question);
+	});
+	try {
+		questions = _.map(questions, function(question){
+			if(!question.id){
+				throw new Error('没有id');
+			}
+			if(!question.image_url){
+				throw new Error('没有image_url');
+			}
+			if(!Array.isArray(question.knowledges)){
+				question.knowledges = [];
+			}
+			question.knowledges = _.map(question.knowledges, function(knowledge){
+				if(isNaN(knowledge.id))
+					throw new Error('knowledge没有id');
+				if(typeof knowledge.name !== 'string')
+					throw new Error('knowledge没有name');	
+				return {
+					id: knowledge.id,
+					name: knowledge.name
+				}
+			});
+			var retval = {};
+			if(question.id)
+				retval.id = question.id;
+			retval.g_paper_id = question.g_paper_id;
+			if(question.image_url)
+				retval.image_url = question.image_url;
+			if(question.subject)
+				retval.subject = question.subject;
+			if(question.name)
+				retval.name = question.name;
+			if(question.type)
+				retval.type = question.type;
+			if(question.difficulty)
+				retval.difficulty = question.difficulty;
+			if(question.discr)
+				retval.discr = question.discr;
+			if(question.score)
+				retval.score = question.score;
+			if(question.knowledges)
+				retval.knowledges = question.knowledges;
+			return retval;
+		});
+	} catch (e) {
+		return responseWrapper.error('PARAMETERS_ERROR');
+	}
+	Thenjs(function(cont){
+		var dmpUrl = URL.format({
+			protocol: dmpServ.protocol,		
+			hostname: dmpServ.hostname,		
+			port: dmpServ.port,
+			pathname: '/yuanpei_api/v1/questions/teacher_marked',		
+			search: qs.stringify({
+				api_key: req.query.api_key	
+			})
+		});
+		
+		request.post({
+			url: dmpUrl,
+			body: JSON.stringify(req.body),
+			headers: {
+				'content-type': 'application/json'
+			}	
+		}, function(error, response, body){
+			if(error){
+				console.error(error.message);
+			}
+			cont(null, null);
+		});
+	}).then(function(cont, result){
+		db.collection('mark_exampaper').find({
+			_id: {$in: _.keys(objQuestion)}
+		}, {
+			questions: 1
+		}).toArray(function(err, _docs){
+			docs = _docs;
+			if(docs.length === 0){
+				return responseWrapper.error('HANDLE_ERROR');
+			}
+			cont(null, null);
+		});
+	}).each(_.keys(objQuestion), function(cont, value){
+	 	var dmpUrl = URL.format({
+	 		protocol: dmpServ.protocol,		
+	 		hostname: dmpServ.hostname,		
+	 		port: dmpServ.port,
+	 		pathname: '/yuanpei_api/v1/exampapers/signatures/'+value,
+	 		search: qs.stringify({
+	 			api_key: req.query.api_key	
+	 		})
+	 	});
+		request({
+			url: dmpUrl	
+		}, function(err, response, body){
+			var _body = JSON.parse(body);
+			var signatureId = _body.g_paper_id;
+			srcExampaper[signatureId] = _body;
+			cont(null, null);
+		});
+	}).each(knowIds, function(cont, value){
+		/*
+		 * 如果库中结构变化，可能会影响到此处功能
+		 */
+		var KBSERV = config.get('kb_api_server');
+		var kbUrl = URL.format({
+			protocol: 'http',		
+			hostname: KBSERV.hostname,		
+			port: KBSERV.port,
+			pathname: '/kb_api/v2/knowledges/'+value,		
+			search: qs.stringify({
+				api_key: req.query.api_key,
+				fields_type: 'common'
+			})
+		});
+		request({
+			url: kbUrl	
+		}, function(error, response, body){
+			try{
+				var _body = JSON.parse(body);
+				cont(null, {
+					_id: _body.id,
+					name: _body.name,	
+					subject: _body.subject,
+					videos: _body.videos,	
+					importance: _body.importance,	
+					chance: _body.chance,	
+					score: _body.score,
+				});
+			}catch(err){
+				cont(err, null);
+			}
+		});
+	}).then(function(cont, knowledges){
+		// 不允许传空知识点
+		var objKnowledges = {};
+		_.each(knowledges, function(knowledge){
+			knowledge.id = knowledge._id;
+			objKnowledges[knowledge.id] = knowledge;	
+		});
+		// docs 试卷
+		_.each(docs, function(doc){
+			var _id = doc._id;
+			var src = srcExampaper[_id];
+			var uniq_ids = _.map(doc.questions, function(question){
+				return question.id;
+			});
+			if(src && src.questions){
+				_.each(src.questions, function(question){
+					if(uniq_ids.indexOf(question.id) < 0){
+						question.ques_id = question.id;
+						question.id = question.g_question_id;
+						delete question.g_question_id;
+						doc.questions.push(question);
+					}
+				});
+			}
+			_.each(objQuestion[_id], function(question){
+				// question 提交的数据
+				// q为对应的试题
+				var q = _.find(doc.questions, function(ques){
+					return question.id === ques.id;
+				});
+				if(!q){
+					return responseWrapper.error('NULL_ERROR', '请仔细检查所传入的数据是否有误');
+				}
+				// 当question.knowledges.length 为0时，清空知识点
+				q.knowledges = [];
+				_.each(question.knowledges, function(k){
+					if(_.pluck(q.knowledges, 'id').indexOf(k.id) < 0){
+						var kn = objKnowledges[k.id];
+						delete kn._id;
+						q.knowledges.push(kn);
+					}
+				});
+			});
+		});
+		Thenjs.each(docs, function(cont, value){
+			var src = srcExampaper[value._id];
+			var questions = {};
+			_.each(value.questions, function(question){
+				var uniq_id = question.id;
+				if(!questions[uniq_id]){
+					questions[uniq_id] = question;
+				}
+			});
+			db.collection('mark_exampaper').update({_id: value._id}, {
+				$set: {
+					questions: _.values(questions),
+				}	
+			}, function(err, writeResult){
+				cont(null, null);	
+			});
+		}).then(function(cont, result){
+			return responseWrapper.succ({});
+		}).fail(function(cont, error){
+			return responseWrapper.error('HANDLE_ERROR');
+		});
+	}).fail(function (cont, error) { 
+		return responseWrapper.error('HANDLE_ERROR', error.message);
+	});
+}

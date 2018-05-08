@@ -1,0 +1,23 @@
+{
+    "app": {
+        "name": "express-boilerplate",
+        "port": 9999,
+        "url": "http://express-boilerplate.yunxiao.com",
+        "env": "prod"
+    },
+    "mongo": {
+        "uri": "",
+        "options": {
+            "poolSize": 100,
+            "socketOptions": {
+                "autoReconnect": true,
+                "noDelay": true,
+                "connectTimeoutMS": 3600000,
+                "keepAlive": 3600000,
+                "socketTimeoutMS": 3600000
+            },
+            "reconnectTries": 60,
+            "reconnectInterval": 2000
+        }
+    }
+}

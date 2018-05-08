@@ -1,0 +1,19 @@
+@User:{   
+    username: String,     
+    password: String   
+ }
+
+@Boke:{
+    u_id:String,
+    title:String,
+    content:String,
+    classify:String,
+    date:Double
+}
+
+@critiques:{
+    u_id:String,        //评论用户的ID
+    arc_id:String,      //文章ID
+    critique:String,    //评论内容
+    del_flag:Integer        //软删除标志符
+}

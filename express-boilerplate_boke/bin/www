@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+'use strict';
+const Thenjs = require('thenjs');
+const peterMgr = require('peter').createManager('scaffold');
+
+const MongoClient = require('mongodb').MongoClient;
+
+const config = require('config');
+const appConf = config.get('app');
+
+const logger = require('../lib/logger').logger;
+const utils = require('../lib/utils');
+const errCodes = require('../lib/error');
+
+const dbDriver = require('../lib/dbDriver');
+
+function init(callback) {
+    Thenjs(function (cont) {
+        // init main peter
+        peterMgr.bindDb(config.get('mongo').uri, cont);
+    }).then(function (cont, arg) {
+        MongoClient.connect(config.get('mongo').uri, cont)
+    }).then(function (cont, arg) {
+        dbDriver.init(arg);
+        logger.info(' ready now!');
+        
+        // init http server
+        const app = require('../app');
+        const port = process.env.SERVICE_PORT || appConf.port;
+        const server = app.listen(port, () => {
+            logger.info(`Startup ${appConf.name} in env ${process.env.NODE_ENV || 'development'} on port ${port}`);
+            logger.info(`Local Address is: ${utils.getServerLocalAddressAndPort()}`);
+            cont();
+        });
+        server.on('error', onError);
+    }).fin(function (cont, err, arg) {
+        return callback(err);
+    });
+}
+
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(appConf.port + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(appConf.port + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+init(function (err, result) {
+    if (err) {
+        logger.error(`Error: ${JSON.stringify(err.stack || err)}`);
+        return process.exit(-1);
+    } else {
+        logger.info(`Server are ready!`);
+    }
+});
+
+// Global Error handlers
+process.on('uncaughtException', (err) => {
+    const errMsg = {
+        api: 100,
+        msg: 'Global caught exception!',
+        errStack: err.stack || err
+    };
+
+    logger.error(`==code:${errCodes.GLOBAL_ERR}==errMsg:${JSON.stringify(errMsg)}==`);
+});

@@ -1,0 +1,8 @@
+# output directories
+reports
+logs
+
+# Dependency directories
+node_modules
+
+.git

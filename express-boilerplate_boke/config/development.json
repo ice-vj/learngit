@@ -1,0 +1,24 @@
+{
+    "app": {
+        "name": "scaffold",
+        "port": 9999,
+        "url": "http://be.yunxiao.com:9999",
+        "env": "dev"
+    },
+    "mongo": {
+        "uri": "mongodb://localhost:27017/usertest",
+        "options": {
+            "poolSize": 100,
+            "socketOptions": {
+                "autoReconnect": true,
+                "noDelay": true,
+                "connectTimeoutMS": 3600000,
+                "keepAlive": 3600000,
+                "socketTimeoutMS": 3600000
+            },
+            "reconnectTries": 60,
+            "reconnectInterval": 2000,
+            "useUTC": true
+        }
+    }
+}
