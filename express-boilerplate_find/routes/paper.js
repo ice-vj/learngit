@@ -38,8 +38,8 @@ router.get('/findpaperBygrade', function (req, res) {
         } else {
             //console.log(data.length);
             //获取分页信息
-            let limit = req.param(limit,10);
-            let currentPage = req.param(currentPage,1);
+            let limit = parseInt(req.query.limit) || 10;
+            let currentPage = parseInt(req.params.currentPage) || 1;
             //获取总页数
             let totalpage = Math.floor(data.length / limit);
             //如果最后一页不到limit行数，总页数+1
