@@ -1,0 +1,36 @@
+{
+  "name": "scaffold",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "./run_test.sh",
+    "lint": "./node_modules/eslint/bin/eslint.js --ignore-path .gitignore --ignore-pattern static/ --ignore-pattern tests/ --ignore-pattern reports/ --format html -o reports/eslint/eslint.html . || true",
+    "coverage": "NODE_ENV=development ./node_modules/istanbul/lib/cli.js --config=.istanbul.yml cover ./node_modules/mocha/bin/_mocha -- tests/routes/ --recursive --no-timeouts -R mochawesome --reporter mochawesome --reporter-options reportDir=./reports/mochawesome",
+    "report": "open ./reports/coverage/lcov-report/index.html",
+    "check": "node ./scripts/health.js",
+    "init": "node ./run_init.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.15.2",
+    "config": "^1.24.0",
+    "cookie-parser": "~1.4.3",
+    "express": "~4.14.0",
+    "lodash": "^4.17.4",
+    "log4js": "^1.1.0",
+    "moment": "^2.19.2",
+    "mongodb": "^2.2.21",
+    "node-rest-client": "^3.1.0",
+    "peter": "git+ssh://git@code.iyunxiao.com:commonsgroup/peter.git#release",
+    "thenjs": "^2.0.5"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "istanbul": "^0.4.4",
+    "mocha": "^3.2.0",
+    "mocha-minimalist-reporter": "^1.1.0",
+    "mochawesome": "^3.0.0",
+    "should": "^11.1.2",
+    "supertest": "^2.0.1"
+  }
+}
