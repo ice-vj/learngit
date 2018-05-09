@@ -86,7 +86,7 @@ router.post('/addTalk', function (req, res) {
     });
 
 });
-//删除评论(未修改)
+//删除评论(未修改 ，可用)
 router.delete('/deleteTalk/:_id', function (req, res) {
 
     let errMsg = utils.buildErrMsg(req, apis.DELETETALK);
