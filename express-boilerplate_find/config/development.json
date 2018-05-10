@@ -6,7 +6,7 @@
         "env": "dev"
     },
     "mongo": {
-        "uri": "mongodb://kb_dev:kb_dev@172.31.16.23:27017/test_kb",
+        "uri": "mongodb://localhost:27017/usertest",
         "options": {
             "poolSize": 100,
             "socketOptions": {

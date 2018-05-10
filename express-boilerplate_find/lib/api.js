@@ -24,7 +24,10 @@ module.exports = {
     SHOWCLASSIFY:1031,
 
     //papercheck
-    
+    SHOWPAPER:1040,
+
+    //BOEK
+    SHOWTOP:1050,
     
 
 };

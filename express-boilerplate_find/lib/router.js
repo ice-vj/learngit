@@ -12,7 +12,7 @@ const article = require('../routes/article');
 const showArt = require('../routes/showArt');
 // const ptarticle = require('../routes/ptarticle');
 const paper = require('../routes/exampaper');
-
+const boke = require('../routes/boke')
 
 const routers = {
     // For OP health Check
@@ -24,13 +24,12 @@ const routers = {
     //博客文章操作
     '/article': article,
     '/showArt': showArt,
- 
+    '/boke':boke,
 
     //试卷查找
     '/paper': paper,
 
-    // //用peter进行操作
-    // '/ptarticle':ptarticle,
+    
 };
 
 function initRoute(app) {

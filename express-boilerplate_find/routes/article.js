@@ -39,7 +39,7 @@ router.post('/addarticle', function (req, res) {
             errMsg.msg = '数据库错误';
             return res.json(utils.resJSON(errCodes.DB_ERR, '数据库错误', null, errMsg));
         }
-        if (_.isNil(data)) {
+        if (!_.isNil(data)) {
             errMsg.msg = 'success';
             return res.json(utils.resJSON(errCodes.SUCCESS, 'OK', null, errMsg));
         } else {

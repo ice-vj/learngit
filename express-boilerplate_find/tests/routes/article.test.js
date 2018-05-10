@@ -23,36 +23,36 @@ before((done) => {
     });
 });
 
-// //添加文章
-// describe('/addarticle', function () {
-//     it('参数错误', function (done) {
-//         request.post(`/article/addarticle`)
-//             .expect(200)
-//             .end((err, result) => {
-//                 should.not.exists(err);
-//                 result.body.code.should.equal(errCodes.PARAM_ERR);
-//                 result.body.msg.should.equal('发表失败');
-//                 done();
-//             });
-//     });
+//添加文章
+describe('/addarticle', function () {
+    it('参数错误', function (done) {
+        request.post(`/article/addarticle`)
+            .expect(200)
+            .end((err, result) => {
+                should.not.exists(err);
+                result.body.code.should.equal(errCodes.PARAM_ERR);
+                result.body.msg.should.equal('发表失败');
+                done();
+            });
+    });
 
-//     it('插入成功', function (done) {
-//         request.post(`/article/addarticle`)
-//             .set('Cookie', 'u_id=j%3A%225ae93fc3d3475837b0ff3bd7%22; Path=/' )
-//             .send({
-//                     title : '标题',
-//                     content : '这是文章内容',
-//                     classify : '测试',
-//              })
-//             .expect(200)
-//             .end((err, result) => {
-//                 should.not.exists(err);
-//                 result.body.code.should.equal(errCodes.SUCCESS);
-//                 result.body.msg.should.equal('OK');
-//                 done();
-//             });
-//     });
-// });
+    it('插入成功', function (done) {
+        request.post(`/article/addarticle`)
+            .set('Cookie', 'u_id=j%3A%225ae93fc3d3475837b0ff3bd7%22; Path=/' )
+            .send({
+                    title : '爱云校',
+                    content : '原力觉醒',
+                    classify : '测试',
+             })
+            .expect(200)
+            .end((err, result) => {
+                should.not.exists(err);
+                result.body.code.should.equal(errCodes.SUCCESS);
+                result.body.msg.should.equal('OK');
+                done();
+            });
+    });
+});
 
 // //添加评论
 // describe('/addTalk', function () {
@@ -87,7 +87,7 @@ before((done) => {
 
 //删除评论
 
-describe('/deleteTalk', function () {
+// describe('/deleteTalk', function () {
     // it('没有拿到cooki', function (done) {
     //     request.delete(`/article/deleteTalk/1525614004084tid`)
     //     .send({
@@ -101,21 +101,21 @@ describe('/deleteTalk', function () {
     //     });
     // });
 
-    it('删除成功', function (done) {
-        request.delete(`/article/deleteTalk/1525614004084tid`)
-        .set('Cookie', 'u_id=j%3A%225ae93fc3d3475837b0ff3bd7%22; Path=/' )
-        .send({
-        })
-        .expect(200)
-        .end((err, result) => {
-            should.not.exists(err);
-            result.body.code.should.equal(errCodes.SUCCESS);
-            result.body.msg.should.equal('删除成功');
+//     it('删除成功', function (done) {
+//         request.delete(`/article/deleteTalk/1525614004084tid`)
+//         .set('Cookie', 'u_id=j%3A%225ae93fc3d3475837b0ff3bd7%22; Path=/' )
+//         .send({
+//         })
+//         .expect(200)
+//         .end((err, result) => {
+//             should.not.exists(err);
+//             result.body.code.should.equal(errCodes.SUCCESS);
+//             result.body.msg.should.equal('删除成功');
 
-            done();
-        });
-    });
-});   
+//             done();
+//         });
+//     });
+// });   
 
 
 //添加文章
