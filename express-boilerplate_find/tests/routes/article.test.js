@@ -2,10 +2,9 @@
 const superTest = require('supertest');
 const should = require('should');
 
-const peterMgr = require('peter').getManager('ut');
 const config = require('config');
 
-const MongoClient = require('mongodb').MongoClient;
+
 const Thenjs = require('thenjs');
 const _ = require('lodash');
 
@@ -13,7 +12,7 @@ const enums = require('../../lib/enum');
 const errCodes = require('../../lib/error');
 const common = require('../libs/common.test');
 const utils = require('../../lib/utils');
-const dbDriver = require('../../lib/dbDriver').get();
+
 // 初始化获取app
 let request;
 before((done) => {

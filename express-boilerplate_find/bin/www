@@ -22,7 +22,7 @@ function init(callback) {
         MongoClient.connect(config.get('mongo').uri, cont)
     }).then(function (cont, arg) {
         dbDriver.init(arg);
-        logger.info(' ready now!');
+        logger.info('peter ready now!');
         
         // init http server
         const app = require('../app');
