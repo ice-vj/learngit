@@ -35,7 +35,7 @@ router.get('/showtopical', function (req, res){
     }else{
         currentPage = 1;
     }
-    let redis_res_key = "result:"+query['article.title']+","+query['article.classify'];
+    let redis_res_key = "result:" + query['article.title'] + "," + query['article.classify'];
     //console.log(redis_res_key);
     //没拿到地区
     if (_.isNil(query)){
