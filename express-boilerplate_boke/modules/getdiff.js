@@ -4,189 +4,86 @@ const lineread =require('readline');
 const Thenjs = require('thenjs');
 const md5 = require('crypto').createHash('md5');
 
-function read(url) {
-    fs.readdir(url, function (err, files) {
-        files.forEach(function (file) {
-            var filePath = url + "/" + file;
-            fs.stat(filePath, function (err, stats) {
-                if (stats.isDirectory()) {
-                    read(filePath);
-                } else {
-                    var rl = lineread.createInterface({
-                        input: fs.createReadStream(filePath),
-                        terminal: false
-                    });
-                    var fileType = file.split('_');
-                    var jsonss = [];
-                    rl.on('line', function (line) {
-                        if (line != null && line != "") {
-                            jsonss.push(JSON.parse(line));
-                        }
-                    }).on('close', function () {
-                        var jsondata = { filename: file, data: jsonss };
-                        if (fileType[fileType.length - 1] == 'dup') {
-                            mongodao.qcdupModel.create(jsondata, function (err, res) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    count++;
-                                    console.log('save qcdupmodel ok' + count);
-                                    console.info(res);
-                                }
-                            });
-                        } else if (fileType[fileType.length - 1] == 'nodup') {
-                            mongodao.qcnodupModel.create(jsondata, function (err, res) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    count++;
-                                    console.log('save qcnodumpmodel ok' + count);
-                                    console.info(res);
-                                }
-                            });
-                        } else {
-                            mongodao.qcModel.create(jsondata, function (err, res) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    count++;
-                                    console.log('save qcmodel ok' + count);
-                                    console.info(res);
-                                }
-                            });
-                        }
-                    });
-                    console.info("===================================")
-                }
-            })
-        })
-    });
-}
+let index_map = {};
+let data_map = {};
+let tempfils = [];
 
-function mergetSort(arr) {
-    if(arr.length === 1) {
-        return arr;
-    }
-    var leftArr = arr.slice(0, Math.floor(arr.length / 2));
-    var rightArr = arr.slice(leftArr.length);
-    // 递归
-    return merge(mergetSort(leftArr), mergetSort(rightArr)); 
-    // 合并有序序列
-    function merge(arrLeft, arrRight) {
-        var indexLeft = 0,
-            indexRight = 0,
-            sl = arrLeft.length,
-            sr = arrRight.length,
-            ret = []; 
-        while(true) {
-            if(indexLeft < sl && indexRight < sr) {
-                if(arrLeft[indexLeft] < arrRight[indexRight]) {
-                    ret.push(arrLeft[indexLeft]);
-                    indexLeft++;
-                } else {
-                    ret.push(arrRight[indexRight]);
-                    indexRight++;
-                }
-            } else {
-                if(indexLeft < indexRight) {
-                    ret = ret.concat(arrLeft.slice(indexLeft));
-                } else {
-                    ret = ret.concat(arrRight.slice(indexRight));
-                }
-                break;
-            }
-        }
-        return ret;
-    }
-}
-
-function merge(arrLeft, arrRight) {
-    var indexLeft = 0,
-        indexRight = 0,
-        sl = arrLeft.length,
-        sr = arrRight.length,
-        ret = []; 
-    while(true) {
-        if(indexLeft < sl && indexRight < sr) {
-            if(arrLeft[indexLeft] < arrRight[indexRight]) {
-                ret.push(arrLeft[indexLeft]);
-                indexLeft++;
-            } else {
-                ret.push(arrRight[indexRight]);
-                indexRight++;
-            }
-        } else {
-            if(indexLeft < indexRight) {
-                ret = ret.concat(arrLeft.slice(indexLeft));
-            } else {
-                ret = ret.concat(arrRight.slice(indexRight));
-            }
-            break;
-        }
-    }
-    return ret;
-}
-
-var baseUrl = 'D:/下载/line';
-var createJson = 'D:/下载/line/data.txt';
-function aa(){
-    fs.readdir(baseUrl, function(err, files) {
-        if (err) {
-            throw err;
-        }
-        var filePath = '';
-
-        var fileReadStream;
-        var fileWriteStream = fs.createWriteStream(createJson);
-
-
-        createStramFile();
-        var fileNum = files.length-1;
-
-        function createStramFile(){
-            var currentfile = baseUrl+'/' + files.shift();
-            fileReadStream = fs.createReadStream(currentfile);
-            fileReadStream.pipe(fileWriteStream,{end:false});
-            fileReadStream.on("end", function() {
-                console.log(currentfile + ' appended');
-                createStramFile();
-            });
-            if (!files.length) {
-                fileWriteStream.end("Done");
-                console.log('copy Done');
-                return;
-            }
-
-            fileWriteStream.on('data',function(chunk){
-                console.log('copy data');
-                return chunk+','
-            });
-
-            fileWriteStream.on('close',function(){
-                console.log(fileNum);
-                if (!fileNum) {
-                    roMockJs()
-                }
-                --fileNum;
-                console.log('copy over');
-                //roMockJs();
-            });
-
-        }
-
-
-    });
-}
-
-async function getOrderBigfile(filename, filenum){
-    let fd = [];
-    let arr = [];
-    for(let i = 0; i < filenum; i++){
-        fd.push(fs.openSync('D:/下载/line/' + filename + '/' + i + '.txt', 'r+'));
-    }
-    let result = await fs.read(fd[i], buff, offset, 16, )
+//获取排好序文件
+function getOrderBigFile(){
     
 }
+
+//获取文件列表
+let files = fs.readdirSync('D:/下载/line')
+//写入文件流
+
+//读取文件下一行内容
+function readNextLine(file, callback){
+    fs.read()
+};
+//获取值最小值的文件名
+function getMinDataFile(data_map, index_map){
+    for(data in data_map){
+        
+    }
+};
+//检测文件是否读完
+function checkFinish(){
+
+};
+
+
+function initAllMinData(callback){
+    //如果文件列表为空
+    if(!tempfils.length){
+        //返回所有文件首行数据
+        return callback(null, data_map);
+    }
+    //定义file为临时文件去除首行数组
+    let file = tempfils.shift();
+    readNextLine(file, function(err, lineData){
+        if(err){
+            return callback(err);
+        }
+        //把新一行数据放入数据对象
+        data_map[file] = lineData;
+        index_map[file] =  0;
+        initAllMinData(callback);
+    });
+    
+}
+//文件分类
+function file_sort(callback){
+    //获取最小文件的文件名
+    let finished = checkFinish();
+    if(finished){
+        return callback(null, 'finished');
+    }
+    let minFile = getMinDataFile(data_map, index_map);
+    //获取此时最小文件首行内容
+    //写入流
+
+    //读取最小文件的下一行
+    readNextLine(minFile, function(lineData){
+        //err catch
+        //数据对象内容更新
+        data_map[file] = lineData;
+        //标记文件读取行数
+        index_map[file] = index_map[minFile]+1;
+        file_sort(callback);
+    })
+};
+
+initAllMinData(function(err, data_map, callback){
+    if(err){
+        console.log(err);
+        process.exit();
+    }
+    
+    file_sort(callback);
+});
+
+
 
 //md5签名
 function tomd5(data) {
@@ -242,7 +139,7 @@ function getdiff(fileA, fileB, callback){
             cont(null, filenumB);
         });
     }).then(function(cont, filenumA, filenumB){
-        getOrderBigfile(fileA, filenumA);
+        
         
     }).fail(function(cont, err){
         return callback(err);
@@ -257,4 +154,4 @@ function getdiff(fileA, fileB, callback){
 // md5.update('ljdaksljdlaj');
 // let s = md5.digest('hex');
 // console.log(s);
-read('D:/下载/line');
+//read('D:/下载/line');
