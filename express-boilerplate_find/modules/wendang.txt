@@ -1,0 +1,343 @@
+一、编辑记录
+获取视频编辑记录
+Method: GET
+
+URI:  /kb_api/v2/videos/list?status
+
+Query Data
+
+{  
+    status: string, //editing,submit
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data:[//根据status，响应对应状态的结果集
+            { 
+                total_num: number,
+                records:[{
+                    name: string,//编辑专辑名称
+                    period: string, //学段
+                    subject: string //学科
+                    ctime: string, //编辑时间
+                    stime: string, //提交时间
+                    status: string, //finished:审核通过,rejected: 审核拒绝,reviewing: 审核中
+                    task_id: string,//资源编辑的标识id
+                }]
+            }
+        ]
+    },
+]
+获取教材编辑记录
+Method: GET
+
+URI:  /kb_api/v2/region_books/list?status
+
+Query Data
+
+{  
+    status: string, //editing,submit
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                grade: string, //教材
+                press_version: string, //版本
+                ctime: string, //开始编辑时间
+                utime: string, //最后更新时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
+
+获取知识树编辑记录
+Method: GET
+
+URI:  /kb_api/v2/knowledge_trees/list?status
+
+Query Data
+
+{  
+    status: string, //editing,submit
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                name: string, //知识树名称
+                ctime: string, //开始编辑时间
+                utime: string, //最后更新时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
+获取知识点编辑记录
+Method: GET
+
+URI:  /kb_api/v2/knowledge/list?status
+
+Query Data
+
+{  
+    status: string, //editing,submit
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                name: string, //知识树名称
+                ctime: string, //开始编辑时间
+                utime: string, //最后更新时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
+获取编目编辑记录
+Method: GET
+
+URI:  /kb_api/v2/catalog/list?status
+
+Query Data
+
+{  
+    status: string, //editing,submit
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                name: string, //知识树名称
+                ctime: string, //开始编辑时间
+                utime: string, //最后更新时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                catalog_type: string, //编目类型
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
+二、内容审核
+获取视频审核记录
+Method: GET
+
+URI:  /kb_api/v2/video/reviewslist?status
+
+Query Data
+
+{  
+    status: string, //已经提交：submited,审核中：reviewing, 已经审核过：reviewed
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                name: string,//专辑名称
+                ctime: string, //编辑时间
+                stime: string, //提交时间
+                user_name:string, //用户名称
+                utime: string, //审核时间
+                comment: string, //评论内容
+                status: string, //finished:审核通过,rejected: 审核拒绝,reviewing: 审核中
+                task_id: string,//资源编辑的标识id
+            }]
+        }
+    },
+]
+
+获取教材审核记录
+Method: GET
+
+URI:  /kb_api/v2/region_books/reviewslist?status
+
+Query Data
+
+{  
+    status: string, //已经提交：submited,审核中：reviewing, 已经审核过：reviewed
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                grade: string, //教材
+                press_version: string, //版本
+                user_name: string, //提交人名称
+                ctime: string, //开始编辑时间
+                utime: string, //最后提交时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
+
+获取知识树审核记录
+Method: GET
+
+URI:  /kb_api/v2/knowledge_trees/reviewslist?status
+
+Query Data
+
+{  
+    status: string, //已经提交：submited,审核中：reviewing, 已经审核过：reviewed
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                name: string, //知识树名称
+                user_name: string, //提交人名称
+                ctime: string, //开始编辑时间
+                utime: string, //最后更新时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
+获取知识点编辑记录
+Method: GET
+
+URI:  /kb_api/v2/knowledge/reviewslist?status
+
+Query Data
+
+{  
+    status: string, //已经提交：submited,审核中：reviewing, 已经审核过：reviewed
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                name: string, //知识树名称
+                ctime: string, //开始编辑时间
+                user_name: string, //提交者名称
+                utime: string, //最后更新时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
+
+获取编目编辑记录
+Method: GET
+
+URI:  /kb_api/v2/catalog/reviewslist?status
+
+Query Data
+
+{  
+    status: string, //已经提交：submited,审核中：reviewing, 已经审核过：reviewed
+}
+
+
+Resopnse Data
+[
+    {  
+        code: int,
+        msg: string,
+        data: {
+            total_num: number,
+            records:[{
+                period: string,
+                subject: string,
+                name: string, //知识树名称
+                user_name: string, //提交人名称
+                ctime: string, //开始编辑时间
+                utime: string, //最后更新时间/审核时间
+                op_type: string, //操作类型：删除，新增，修改
+                catalog_type: string, //编目类型
+                task_id: string, //任务id
+                comment: string, 资源操作备注
+                status: string, 当前状态 submited,reviewing,finished,rejected
+            }]
+        }
+    },
+]
