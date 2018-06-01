@@ -43,3 +43,40 @@ function check_finished(){
     }
     console.log('处理完毕');
 })()
+
+
+
+function getdiff(fileA, fileB, callback){
+    //console.log(fileA);
+    Thenjs(function(cont){
+        try{
+            getManyOrderFiles(fileA);
+            getManyOrderFiles(fileB);
+        }catch(err){
+            return cont(err);
+        }
+        return cont(null, 'success')
+    }).then(function(cont, msg){
+        getTempfils(fileA);
+        initAllMinData(fileA, function(err, data_map, cb){
+            if(err){
+                return cont(err);
+            }  
+            file_sort(fileA, cb);
+        });
+        return cont(null, msg)
+    }).then(function(cont, msg){
+        getTempfils(fileB);
+        initAllMinData(fileB, function(err, data_map, cb){
+            if(err){
+                return cont(err);
+            }  
+            file_sort(fileB, cb);
+        });
+        return cont(null, msg);
+    }).then(function(cont, msg){
+        return callback(msg)
+    }).fail(function(cont, err){
+        return callback(err);
+    })
+}

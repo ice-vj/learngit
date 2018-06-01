@@ -4,7 +4,7 @@ const lineread =require('readline');
 const Thenjs = require('thenjs');
 const md5 = require('crypto').createHash('md5');
 const _ = require('lodash');
-const Step = require('step')
+
 //临时队列数据
 let index_map = {};
 //临时队列读取行数
@@ -21,11 +21,10 @@ function gettempfiles(filename){
     files.forEach(function(item, index){
         let stat = fs.lstatSync('D:/下载/line/' + filename + '/' + item)
         if (stat.isFile() === true) { 
-            tempfiles.push(item);
+            tempfiles.push(item)
         }
     });
     return true;
-
 }
 
 //读取文件指定行内容
@@ -57,6 +56,8 @@ function readNextLine(file, madir, callback){
     });
 };
 
+
+
 //获取对象第一个属性
 function getFirstAttr(obj){
     for(let attr in obj) return attr;
@@ -66,26 +67,10 @@ function getFirstAttr(obj){
 function getMinDataFile(data_map, index_map){
     let minfile = getFirstAttr(data_map);
     for(let file in data_map){
-        if(data_map[file] < data_map[minfile]){
-            minfile = file;
-        }
+        if(data_map[file] < data_map[minfile])
+        minfile = file;
     }
     return minfile;
-};
-
-//获取值最小值的文件名
-function getFileFalg(data_map, index_map){
-    let falg;
-    if(data_map['Aorder.txt'] < data_map['Border.txt']){
-        falg = 'A';
-    }
-    if(data_map['Aorder.txt'] === data_map['Border.txt']){
-        falg = 'AB'
-    }
-    if(data_map['Aorder.txt'] > data_map['Border.txt']){
-        falg = 'B'
-    }        
-    return falg;
 };
 
 //检测文件是否读完
@@ -142,12 +127,12 @@ function file_sort(madir, callback){
     //读取最小文件的下一行
     index_map[minFile] = index_map[minFile]+33;
     
-    readNextLine(minFile, madir, function(err, fd, lineData){
+     readNextLine(minFile, madir, function(err, fd, lineData){
          //err catch
          //数据对象内容更新
-        if(lineData){
+         if(lineData){
             data_map[minFile] = lineData;       
-        }
+         }
         fs.close(fd, function(err){
             if(err){
                 return callback(err);
@@ -205,93 +190,119 @@ function getdiff(fileA, fileB, callback){
     let finished = checkFinish();
     if(finished){
         return callback('finished');
-    }        
-    if(data_map[fileA] < data_map[fileB]){
-        fs.appendFileSync('D:/下载/line/C.txt', data_map[fileA]);
-        index_map[fileA] += 33;
-        readNextLine(fileA, null, function(err, fd, lineStr){
-            if(lineStr){
-                data_map[fileA] = lineStr;
-            }
-            fs.close(fd, function(err){
-                if(err){
-                    return callback(err);
-                }
-            });
-        });    
-    }else if(data_map[fileA] === data_map[fileB]){
-        index_map[fileA] += 33;
-        index_map[fileB] += 33;
-        readNextLine(fileA, null, function(lineStr){
-            if(lineStr){
-                data_map[fileA] = lineStr;
-            }
-            fs.close(fd, function(err){
-                if(err){
-                    return callback(err);
-                }
-            });
-        });
-        readNextLine(fileB, null, function(lineStr){
-            if(lineStr){
-                data_map[fileB] = lineStr;
-            }
-            fs.close(fd, function(err){
-                if(err){
-                    return callback(err);
-                }
-            });
-        });
-    }else if(data_map[fileA] > data_map[fileB]){
-        index_map[fileB] += 33;
-        readNextLine(fileB, null, function(lineStr){
-            if(lineStr){
-                data_map[fileB] = lineStr;
-            }
-            fs.close(fd, function(err){
-                if(err){
-                    return callback(err);
-                }
-            });
-        });
     }
-    getdiff(fileA, fileB, callback);
-}
-
-//大文件做差集22
-//文件合并
-function file_diff(callback){
-    //获取最小文件的文件名
-    let finished = checkFinish();
-    if(finished){
-        return callback('finished');
-    }
-    let falg = getFileFalg(data_map, index_map);
-    if(!_.isNil(data_map['Aorder.txt']) && falg === 'A' ){
-        //写入流
-        fs.appendFileSync('D:/下载/line/C.txt', data_map['Aorder.txt']);
-    }else{
-        return;
-    }
-    //读取最小文件的下一行
-    index_map[falg] = index_map[falg]+33;
-    
-    readNextLine(falg, null, function(err, fd, lineData){
-         //err catch
-         //数据对象内容更新
-        if(lineData){
-            data_map[falg] = lineData;       
+    let A = fileA in data_map;
+    let B = fileB in data_map;
+    Thenjs(function(cont){
+        if(data_map[fileA] < data_map[fileB]){
+            fs.appendFileSync('D:/下载/line/C.txt', data_map[fileA]);
+            index_map[fileA] += 33;
+            readNextLine(fileA, null, function(err, fd, lineStr){
+                if(lineStr){
+                    data_map[fileA] = lineStr;
+                }
+                fs.close(fd, function(err){
+                    if(err){
+                        cont(err);
+                    }
+                });
+                cont(null);
+            });  
+        }else{
+            cont(null);
         }
-        fs.close(fd, function(err){
-            if(err){
-                return callback(err);
-            }
-        });
-    
-        file_diff(callback)
-    })
-};
-
+    }).then(function(cont){
+        if(data_map[fileA] === data_map[fileB]){
+            index_map[fileA] += 33;
+            readNextLine(fileA, null, function(err, fd, lineStr){
+                if(lineStr){
+                    data_map[fileA] = lineStr;
+                }
+                fs.close(fd, function(err){
+                    if(err){
+                        cont(err);
+                    }
+                });
+                cont(null);
+            });
+        }else{
+            cont(null);    
+        }
+    }).then(function(cont){
+        if(data_map[fileA] === data_map[fileB]){
+            index_map[fileB] += 33;
+            readNextLine(fileB, null, function(err, fd, lineStr){
+                if(lineStr){
+                    data_map[fileB] = lineStr;
+                }
+                fs.close(fd, function(err){
+                    if(err){
+                        cont(err);
+                    }
+                });
+                cont(null);
+            });
+        }else{
+            cont(null);
+        }
+    }).then(function(cont){
+        if(data_map[fileA] > data_map[fileB]){
+            index_map[fileB] += 33;
+            readNextLine(fileB, null, function(err, fd, lineStr){
+                if(lineStr){
+                    data_map[fileB] = lineStr;
+                }
+                fs.close(fd, function(err){
+                    if(err){
+                        cont(err);
+                    }
+                });
+                cont(null);
+            });
+        }else{
+            cont(null);
+        }
+    }).then(function(cont){
+        if(A && !B){
+            fs.appendFileSync('D:/下载/line/C.txt', data_map[fileA]);
+            index_map[fileA] += 33;
+            readNextLine(fileA, null, function(err, fd, lineStr){
+                if(lineStr){
+                    data_map[fileA] = lineStr;
+                }
+                fs.close(fd, function(err){
+                    if(err){
+                        cont(err);
+                    }
+                });
+                cont(null);
+            });
+        }else{
+            cont(null);
+        }
+    }).then(function(cont){
+        if(!A && B){
+            index_map[fileB] += 33;
+            readNextLine(fileB, null, function(err, fd, lineStr){
+                if(lineStr){
+                    data_map[fileB] = lineStr;
+                }
+                fs.close(fd, function(err){
+                    if(err){
+                        cont(err);
+                    }
+                });
+                cont(null);
+            });
+        }else{
+            cont(null);
+        }
+    }).then(function(cont){
+        getdiff(fileA, fileB, callback);
+    }).fail(function(cont, err){
+        return callback(err);
+    });
+}
 
 //获取有序大文件启动函数
 function getBigOrderFile(file, callback){
@@ -313,6 +324,8 @@ function getManyMinOrderFiles(fileA, fileB){
 }
 
 
+
+//顺序运行以下方法
 // getManyMinOrderFiles('A', 'B');
 
 // getBigOrderFile('A', function(msg){
@@ -322,11 +335,14 @@ function getManyMinOrderFiles(fileA, fileB){
 // getBigOrderFile('B', function(msg){
 //     console.log(msg);
 // });
-tempfiles.push('Aorder.txt');
-tempfiles.push('Border.txt');
-initAllMinData(null, function(err, msg){
-    console.log(msg);
-    file_diff('Aorder.txt', 'Border.txt', function(msg){
-        console.log(msg);
-    });
-});
+
+//以下一起执行
+// tempfiles.push('Aorder.txt');
+// tempfiles.push('Border.txt');
+// initAllMinData(null, function(err, msg){
+//     //console.log(msg);
+//     getdiff('Aorder.txt', 'Border.txt', function(msg){
+//         console.log(msg);
+//     });
+    
+// });
